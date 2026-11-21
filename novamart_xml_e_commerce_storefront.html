@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovaMart — XML-Powered Online Store</title>
+  <!-- Tailwind CSS for responsive utility styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* Custom CSS Variables & Base Styles — Modern Slate/Midnight Dark Theme */
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --surface: #131b2e;
+      --bg-gradient-start: #090d16;
+      --bg-gradient-end: #111827;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top right, #172038 0%, var(--bg-gradient-start) 48%, #070a11 100%);
+      min-height: 100vh;
+      color: #f1f5f9;
+      overflow-x: hidden;
+    }
+
+    /* Glassmorphic Sticky Navbar */
+    .glass-nav {
+      background: rgba(11, 16, 29, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Smooth SPA Page Transition */
+    .page-section {
+      display: none;
+      animation: fadeSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .page-section.active {
+      display: block;
+    }
+
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Product Card Elevation */
+    .product-card {
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(99, 102, 241, 0.14);
+      border-color: rgba(129, 140, 248, 0.45);
+    }
+
+    /* Dark Mode Select & Input Controls */
+    select option {
+      background-color: #0f172a;
+      color: #f1f5f9;
+    }
+
+    /* Custom Scrollbar for XML Inspector */
+    pre::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    pre::-webkit-scrollbar-track {
+      background: #090d16;
+      border-radius: 8px;
+    }
+    pre::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 8px;
+    }
+    pre::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen selection:bg-indigo-500 selection:text-white">
+  <script id="products-xml" type="application/xml">
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog store="NovaMart" currency="INR" lastUpdated="2026-11-21">
+  <product>
+    <id>PRD-101</id>
+    <name>AeroPulse ANC Wireless Headphones</name>
+    <category>Electronics</category>
+    <price>4499</price>
+    <rating>4.8</rating>
+    <stock>18</stock>
+    <badge>Bestseller</badge>
+    <icon>headphones</icon>
+    <color>indigo</color>
+    <featured>true</featured>
+    <description>Hybrid Active Noise Cancellation with 40-hour battery life, plush memory foam earcups, and multipoint Bluetooth 5.3.</description>
+  </product>
+  <product>
+    <id>PRD-102</id>
+    <name>ChronoFit Pro AMOLED Smartwatch</name>
+    <category>Electronics</category>
+    <price>3299</price>
+    <rating>4.6</rating>
+    <stock>24</stock>
+    <badge>New Arrival</badge>
+    <icon>watch</icon>
+    <color>sky</color>
+    <featured>true</featured>
+    <description>1.78-inch Always-On AMOLED display, built-in GPS, SpO2 monitoring, 100+ sports modes, and 5ATM water resistance.</description>
+  </product>
+  <product>
+    <id>PRD-103</id>
+    <name>KeyCraft 75% Mechanical Keyboard</name>
+    <category>Accessories</category>
+    <price>5899</price>
+    <rating>4.9</rating>
+    <stock>9</stock>
+    <badge>Top Rated</badge>
+    <icon>keyboard</icon>
+    <color>violet</color>
+    <featured>true</featured>
+    <description>Hot-swappable tactile switches, CNC aluminum frame, PBT double-shot keycaps, and customizable per-key RGB backlighting.</description>
+  </product>
+  <product>
+    <id>PRD-104</id>
+    <name>Clean Architecture &amp; Design Patterns</name>
+    <category>Books</category>
+    <price>849</price>
+    <rating>4.7</rating>
+    <stock>42</stock>
+    <badge>Editor's Pick</badge>
+    <icon>book</icon>
+    <color>amber</color>
+    <featured>true</featured>
+    <description>Comprehensive hardcover guide to scalable software engineering, SOLID principles, and resilient distributed systems.</description>
+  </product>
+  <product>
+    <id>PRD-105</id>
+    <name>ThermoFlask Insulated Steel Bottle (1L)</name>
+    <category>Lifestyle</category>
+    <price>799</price>
+    <rating>4.5</rating>
+    <stock>55</stock>
+    <badge>Eco Choice</badge>
+    <icon>bottle</icon>
+    <color>emerald</color>
+    <featured>false</featured>
+    <description>Double-wall vacuum-insulated 316 stainless steel keeps beverages icy cold for 24 hours or piping hot for 12 hours.</description>
+  </product>
+  <product>
+    <id>PRD-106</id>
+    <name>GaNCharge 100W 4-Port Fast Charger</name>
+    <category>Accessories</category>
+    <price>2699</price>
+    <rating>4.7</rating>
+    <stock>15</stock>
+    <badge>Value Deal</badge>
+    <icon>bolt</icon>
+    <color>rose</color>
+    <featured>false</featured>
+    <description>Ultra-compact Gallium Nitride PD 3.1 charger capable of powering laptops, tablets, and phones simultaneously.</description>
+  </product>
+  <product>
+    <id>PRD-107</id>
+    <name>The Pragmatic Web Developer (4th Ed.)</name>
+    <category>Books</category>
+    <price>699</price>
+    <rating>4.4</rating>
+    <stock>30</stock>
+    <badge>Student Fav</badge>
+    <icon>book</icon>
+    <color>teal</color>
+    <featured>false</featured>
+    <description>Hands-on mastery of modern HTML5, CSS Grid, asynchronous JavaScript, XML/JSON data pipelines, and web security.</description>
+  </product>
+  <product>
+    <id>PRD-108</id>
+    <name>NomadTech Water-Resistant Sling Bag</name>
+    <category>Lifestyle</category>
+    <price>1499</price>
+    <rating>4.6</rating>
+    <stock>21</stock>
+    <badge>Trending</badge>
+    <icon>bag</icon>
+    <color>slate</color>
+    <featured>false</featured>
+    <description>Ballistic nylon everyday carry crossbody with magnetic quick-release buckle, padded tablet sleeve, and RFID pocket.</description>
+  </product>
+  <product>
+    <id>PRD-109</id>
+    <name>LumiDesk LED Monitor Light Bar</name>
+    <category>Electronics</category>
+    <price>2199</price>
+    <rating>4.8</rating>
+    <stock>12</stock>
+    <badge>Eye-Care</badge>
+    <icon>lamp</icon>
+    <color>indigo</color>
+    <featured>false</featured>
+    <description>Asymmetric optical design eliminates screen glare while offering stepless color temperature (2700K–6500K) control.</description>
+  </product>
+</catalog>
+  </script>
+
+  <!-- =====================================================================
+       2. TOP STICKY NAVIGATION BAR (5 SPA Views + XML Inspector)
+       ===================================================================== -->
+  <header class="glass-nav sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Brand Logo -->
+        <button onclick="navigateTo('home')" class="flex items-center gap-2.5 text-left group focus:outline-none">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white flex items-center justify-center shadow-lg shadow-indigo-950/80 group-hover:from-indigo-400 group-hover:to-violet-500 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
+          <div>
+            <span class="font-extrabold text-lg tracking-tight text-slate-100">Nova<span class="text-indigo-400">Mart</span></span>
+            <span class="hidden sm:inline-block ml-1.5 text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-400/25">XML Store</span>
+          </div>
+        </button>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden md:flex items-center gap-1" id="desktop-nav">
+          <button data-nav="home" onclick="navigateTo('home')" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-medium transition">Home</button>
+          <button data-nav="products" onclick="navigateTo('products')" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-medium transition">Products</button>
+          <button data-nav="cart" onclick="navigateTo('cart')" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
+            <span>Cart</span>
+            <span id="nav-cart-badge" class="px-2 py-0.5 text-xs font-bold rounded-full bg-indigo-500 text-white shadow-sm">0</span>
+          </button>
+          <button data-nav="checkout" onclick="navigateTo('checkout')" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-medium transition">Checkout</button>
+        </nav>
+
+        <!-- Right Actions: Raw XML Inspector + Auth State + Mobile Menu -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button onclick="openXmlModal()" title="Inspect Raw XML Source" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/90 text-slate-200 border border-white/10 hover:bg-slate-700/90 hover:border-indigo-400/40 transition shadow-sm">
+            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+            <span class="hidden sm:inline">View Raw XML</span>
+            <span class="sm:hidden">XML</span>
+          </button>
+
+          <!-- User Session Area (Updated dynamically via JS) -->
+          <div id="nav-auth-area"></div>
+
+          <!-- Mobile Hamburger Button -->
+          <button onclick="toggleMobileMenu()" aria-label="Toggle Menu" class="md:hidden p-2 rounded-lg text-slate-300 hover:bg-slate-800/80">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-slate-900/95 backdrop-blur-md border-t border-white/10 px-4 pt-2 pb-4 space-y-1 shadow-2xl">
+      <button data-nav="home" onclick="navigateTo('home')" class="nav-btn block w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium">Home</button>
+      <button data-nav="products" onclick="navigateTo('products')" class="nav-btn block w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium">Products Catalog</button>
+      <button data-nav="cart" onclick="navigateTo('cart')" class="nav-btn flex items-center justify-between w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium">
+        <span>Shopping Cart</span>
+        <span id="mobile-cart-badge" class="px-2 py-0.5 text-xs font-bold rounded-full bg-indigo-500 text-white">0</span>
+      </button>
+      <button data-nav="checkout" onclick="navigateTo('checkout')" class="nav-btn block w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium">Checkout</button>
+      <button data-nav="auth" onclick="navigateTo('auth')" class="nav-btn block w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium">Login / Register</button>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       3. MAIN CONTENT AREA (5 SPA PAGES)
+       ===================================================================== -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- -------------------------------------------------------------------
+         PAGE 1: HOME PAGE
+         ------------------------------------------------------------------- -->
+    <section id="page-home" class="page-section active space-y-12">
+      <!-- Hero Banner -->
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-indigo-500/25 text-white p-8 sm:p-12 lg:p-16 shadow-2xl shadow-indigo-950/50">
+        <!-- Ambient Radial Glow -->
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 left-1/3 w-80 h-80 bg-violet-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-2xl space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-400/25 text-indigo-300 text-xs font-semibold tracking-wide uppercase">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Live XML DOMParser Catalog Active
+          </div>
+          <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight text-slate-50">
+            Smart Tech, Books &amp; Essentials Delivered Fast.
+          </h1>
+          <p class="text-slate-300 text-base sm:text-lg leading-relaxed">
+            Explore our curated collection parsed directly from structured XML data into a responsive, dark-mode storefront experience.
+          </p>
+          <div class="flex flex-wrap gap-3 pt-2">
+            <button onclick="navigateTo('products')" class="px-6 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-950 transition flex items-center gap-2">
+              <span>Shop All Products</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </button>
+            <button onclick="openXmlModal()" class="px-6 py-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-100 border border-white/10 font-semibold text-sm transition">
+              Inspect XML Source
+            </button>
+          </div>
+        </div>
+
+        <!-- Decorative Abstract SVG Circles -->
+        <svg class="hidden lg:block absolute right-0 bottom-0 h-full w-1/2 text-indigo-400/10 pointer-events-none" viewBox="0 0 400 400" fill="currentColor">
+          <circle cx="320" cy="200" r="180" />
+          <circle cx="240" cy="340" r="120" />
+        </svg>
+      </div>
+
+      <!-- Store Highlights -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-slate-900/75 rounded-2xl p-6 border border-white/10 shadow-lg flex items-start gap-4">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/15 border border-emerald-400/20 text-emerald-400 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-100">Free Express Delivery</h3>
+            <p class="text-sm text-slate-400 mt-1">Complimentary tracked shipping across India on all orders above ₹999.</p>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/75 rounded-2xl p-6 border border-white/10 shadow-lg flex items-start gap-4">
+          <div class="w-12 h-12 rounded-xl bg-indigo-500/15 border border-indigo-400/20 text-indigo-400 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-100">100% Secure Checkout</h3>
+            <p class="text-sm text-slate-400 mt-1">Instant UPI, Credit/Debit Card, and Cash on Delivery with itemized GST receipts.</p>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/75 rounded-2xl p-6 border border-white/10 shadow-lg flex items-start gap-4">
+          <div class="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-400/20 text-amber-400 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-100">XML-Powered Catalog</h3>
+            <p class="text-sm text-slate-400 mt-1">Structured product metadata parsed via native browser DOMParser API.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Featured Products Section -->
+      <div class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">Handpicked Highlights</span>
+            <h2 class="text-2xl font-extrabold text-slate-100 mt-0.5">Featured Products</h2>
+          </div>
+          <button onclick="navigateTo('products')" class="text-sm font-semibold text-indigo-400 hover:text-indigo-300 inline-flex items-center gap-1 transition">
+            <span>Browse Full Catalog</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Dynamically injected featured cards -->
+        <div id="featured-products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+      </div>
+    </section>
+
+    <!-- -------------------------------------------------------------------
+         PAGE 2: PRODUCTS CATALOG PAGE
+         ------------------------------------------------------------------- -->
+    <section id="page-products" class="page-section space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-100">Products Catalog</h1>
+          <p class="text-sm text-slate-400 mt-1">Showing <span id="catalog-count" class="font-semibold text-slate-200">0</span> items dynamically parsed from XML</p>
+        </div>
+
+        <!-- Search & Sort Controls -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="relative">
+            <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input type="text" id="catalog-search" oninput="renderCatalog()" placeholder="Search products..." class="w-full sm:w-64 pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-white/10 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+          </div>
+
+          <select id="catalog-sort" onchange="renderCatalog()" class="px-4 py-2.5 rounded-xl bg-slate-900/90 border border-white/10 text-sm font-medium text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="default">Sort: Featured</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="rating-desc">Rating: Highest First</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div id="category-filters" class="flex flex-wrap gap-2"></div>
+
+      <!-- Full Product Grid -->
+      <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- -------------------------------------------------------------------
+         PAGE 3: SHOPPING CART PAGE
+         ------------------------------------------------------------------- -->
+    <section id="page-cart" class="page-section space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-100">Shopping Cart</h1>
+          <p class="text-sm text-slate-400 mt-1">Review your selected items before proceeding to checkout.</p>
+        </div>
+        <button onclick="navigateTo('products')" class="text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition">
+          &larr; Continue Shopping
+        </button>
+      </div>
+
+      <div id="cart-container"></div>
+    </section>
+
+    <!-- -------------------------------------------------------------------
+         PAGE 4: CHECKOUT PAGE & RECEIPT
+         ------------------------------------------------------------------- -->
+    <section id="page-checkout" class="page-section space-y-6">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-100">Checkout</h1>
+        <p class="text-sm text-slate-400 mt-1">Complete your shipping and payment details to place your order.</p>
+      </div>
+
+      <!-- Checkout Form Grid (Hidden once order receipt is generated) -->
+      <div id="checkout-form-wrapper" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left 2 Columns: Shipping & Payment -->
+        <form id="checkout-form" onsubmit="handlePlaceOrder(event)" novalidate class="lg:col-span-2 space-y-6">
+          <!-- Shipping Details Card -->
+          <div class="bg-slate-900/80 rounded-2xl p-6 sm:p-8 border border-white/10 shadow-xl space-y-5">
+            <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+              <span class="w-7 h-7 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-extrabold flex items-center justify-center">1</span>
+              Shipping Address
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wide text-slate-400 mb-1.5">Full Name *</label>
+                <input type="text" id="chk-name" required placeholder="Aarav Sharma" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/70 border border-white/10 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wide text-slate-400 mb-1.5">Email Address *</label>
+                <input type="email" id="chk-email" required placeholder="aarav@example.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/70 border border-white/10 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wide text-slate-400 mb-1.5">Phone Number (10 digits) *</label>
+                <input type="tel" id="chk-phone" required placeholder="9876543210" maxlength="10" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/70 border border-white/10 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wide text-slate-400 mb-1.5">City *</label>
+                <input type="text" id="chk-city" required placeholder="Bengaluru" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/70 border border-white/10 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold uppercase tracking-wide text-slate-400 mb-1.5">Street Address *</label>
+                <input type="text" id="chk-address" required placeholder="42, MG Road, Indiranagar" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/70 border border-white/10 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wide text-slate-400 mb-1.5">PIN Code (6 digits) *</label>
+                <input type="text" id="chk-pin" required placeholder="560038" maxlength="6" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/70 border border-white/10 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Method Card -->
+          <div class="bg-slate-900/80 rounded-2xl p-6 sm:p-8 border border-white/10 shadow-xl space-y-5">
+            <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+              <span class="w-7 h-7 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-extrabold flex items-center justify-center">2</span>
+              Payment Method
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="payment-methods">
+              <label class="cursor-pointer border-2 border-indigo-500 bg-indigo-500/15 rounded-xl p-4 flex flex-col gap-1 transition payment-option">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-sm text-slate-100">UPI / QR</span>
+                  <input type="radio" name="payment" value="UPI Instant Payment" checked onchange="highlightPaymentOption(this)" class="accent-indigo-500" />
+                </div>
+                <span class="text-xs text-slate-400">GPay, PhonePe, Paytm</span>
+              </label>
+
+              <label class="cursor-pointer border-2 border-white/10 bg-slate-950/50 rounded-xl p-4 flex flex-col gap-1 transition payment-option hover:border-white/20">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-sm text-slate-100">Credit / Debit Card</span>
+                  <input type="radio" name="payment" value="Credit / Debit Card" onchange="highlightPaymentOption(this)" class="accent-indigo-500" />
+                </div>
+                <span class="text-xs text-slate-400">Visa, Mastercard, RuPay</span>
+              </label>
+
+              <label class="cursor-pointer border-2 border-white/10 bg-slate-950/50 rounded-xl p-4 flex flex-col gap-1 transition payment-option hover:border-white/20">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-sm text-slate-100">Cash on Delivery</span>
+                  <input type="radio" name="payment" value="Cash on Delivery (COD)" onchange="highlightPaymentOption(this)" class="accent-indigo-500" />
+                </div>
+                <span class="text-xs text-slate-400">Pay at your doorstep</span>
+              </label>
+            </div>
+
+            <!-- Inline Validation Error Box -->
+            <div id="checkout-error" class="hidden p-3.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-sm font-medium"></div>
+
+            <button type="submit" class="w-full py-3.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-950 transition">
+              Place Order Now
+            </button>
+          </div>
+        </form>
+
+        <!-- Right Column: Checkout Order Summary -->
+        <div class="lg:col-span-1">
+          <div id="checkout-summary-panel" class="bg-slate-900/80 rounded-2xl p-6 border border-white/10 shadow-xl sticky top-24"></div>
+        </div>
+      </div>
+
+      <!-- Order Confirmation Receipt (Shown after placing order) -->
+      <div id="order-receipt-wrapper" class="hidden max-w-2xl mx-auto"></div>
+    </section>
+
+    <!-- -------------------------------------------------------------------
+         PAGE 5: LOGIN / REGISTER PAGE
+         ------------------------------------------------------------------- -->
+    <section id="page-auth" class="page-section">
+      <div class="max-w-md mx-auto bg-slate-900/85 rounded-3xl p-8 border border-white/10 shadow-2xl space-y-6">
+        <div class="text-center space-y-1">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white flex items-center justify-center mx-auto mb-3 shadow-lg shadow-indigo-950">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <h1 class="text-2xl font-extrabold text-slate-100">Account Access</h1>
+          <p class="text-sm text-slate-400">Sign in to auto-fill checkout &amp; track orders</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="grid grid-cols-2 p-1 rounded-xl bg-slate-950/80 border border-white/5">
+          <button id="tab-login" onclick="switchAuthTab('login')" class="py-2 rounded-lg text-sm font-bold bg-indigo-600 text-white shadow-sm transition">Login</button>
+          <button id="tab-register" onclick="switchAuthTab('register')" class="py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-slate-200 transition">Register</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wide text-slate-400 mb-1.5">Email Address</label>
+            <input type="email" id="login-email" required placeholder="student@novamart.in" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/70 border border-white/10 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wide text-slate-400 mb-1.5">Password</label>
+            <input type="password" id="login-password" required minlength="4" placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/70 border border-white/10 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-950 transition">
+            Sign In
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="register-form" onsubmit="handleRegister(event)" class="hidden space-y-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wide text-slate-400 mb-1.5">Full Name</label>
+            <input type="text" id="reg-name" required placeholder="Priya Nair" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/70 border border-white/10 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wide text-slate-400 mb-1.5">Email Address</label>
+            <input type="email" id="reg-email" required placeholder="priya@novamart.in" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/70 border border-white/10 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wide text-slate-400 mb-1.5">Create Password (min 4 chars)</label>
+            <input type="password" id="reg-password" required minlength="4" placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/70 border border-white/10 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-950 transition">
+            Create Account
+          </button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =====================================================================
+       4. FOOTER
+       ===================================================================== -->
+  <footer class="bg-slate-950/80 border-t border-white/10 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-400">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-slate-100">NovaMart</span>
+        <span>&bull; Built with HTML5, CSS3, JavaScript &amp; XML DOMParser</span>
+      </div>
+      <div class="flex items-center gap-5">
+        <button onclick="navigateTo('home')" class="hover:text-indigo-400 transition">Home</button>
+        <button onclick="navigateTo('products')" class="hover:text-indigo-400 transition">Catalog</button>
+        <button onclick="navigateTo('cart')" class="hover:text-indigo-400 transition">Cart</button>
+        <button onclick="openXmlModal()" class="text-indigo-400 font-semibold hover:underline">XML Schema</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =====================================================================
+       5. RAW XML INSPECTOR MODAL
+       ===================================================================== -->
+  <div id="xml-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-950 text-slate-100 rounded-2xl max-w-3xl w-full border border-white/15 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+      <div class="px-6 py-4 bg-slate-900 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          <h3 class="font-bold text-sm tracking-wide">Embedded XML Data Source (<code class="text-indigo-400">#products-xml</code>)</h3>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="copyRawXml()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-white/10 text-xs font-semibold text-slate-200 transition">
+            Copy XML
+          </button>
+          <button onclick="closeXmlModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="p-4 bg-slate-900/60 border-b border-white/10 text-xs text-slate-400 flex flex-wrap justify-between gap-2">
+        <span>Parser: <strong class="text-emerald-400">new DOMParser().parseFromString(xml, "text/xml")</strong></span>
+        <span id="xml-node-stats">Parsed Nodes: 0</span>
+      </div>
+      <pre id="raw-xml-output" class="p-6 text-xs font-mono text-emerald-300 overflow-auto leading-relaxed"></pre>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       6. TOAST NOTIFICATION CONTAINER
+       ===================================================================== -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 pointer-events-none"></div>
+
+  <!-- =====================================================================
+       7. APPLICATION JAVASCRIPT (XML Parser, State, Cart, Router, UI)
+       ===================================================================== -->
+  <script>
+    /**
+     * Global Application State
+     */
+    const AppState = {
+      products: [],
+      selectedCategory: 'All',
+      cart: [], // Array of { productId, qty }
+      currentUser: null, // { name, email }
+      activePage: 'home'
+    };
+
+    /**
+     * 1. XML PARSER ENGINE
+     * Reads the embedded <script id="products-xml" type="application/xml"> tag
+     * and converts XML <product> elements into structured JavaScript objects.
+     */
+    function parseProductCatalogXML() {
+      try {
+        const xmlScript = document.getElementById('products-xml');
+        if (!xmlScript) throw new Error('XML catalog element not found.');
+
+        const rawXmlString = xmlScript.textContent.trim();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(rawXmlString, 'text/xml');
+
+        // Check for XML syntax errors
+        const parserError = xmlDoc.querySelector('parsererror');
+        if (parserError) {
+          throw new Error('XML Parsing Error: ' + parserError.textContent);
+        }
+
+        const productNodes = xmlDoc.getElementsByTagName('product');
+        const parsedProducts = [];
+
+        for (let i = 0; i < productNodes.length; i++) {
+          const node = productNodes[i];
+          const getTag = (tagName) => {
+            const el = node.getElementsByTagName(tagName)[0];
+            return el ? el.textContent.trim() : '';
+          };
+
+          parsedProducts.push({
+            id: getTag('id'),
+            name: getTag('name'),
+            category: getTag('category'),
+            price: parseFloat(getTag('price')) || 0,
+            rating: parseFloat(getTag('rating')) || 0,
+            stock: parseInt(getTag('stock'), 10) || 0,
+            badge: getTag('badge'),
+            icon: getTag('icon'),
+            color: getTag('color') || 'indigo',
+            featured: getTag('featured') === 'true',
+            description: getTag('description')
+          });
+        }
+
+        AppState.products = parsedProducts;
+
+        // Populate Raw XML Inspector modal
+        const rawOutput = document.getElementById('raw-xml-output');
+        const nodeStats = document.getElementById('xml-node-stats');
+        if (rawOutput) rawOutput.textContent = rawXmlString;
+        if (nodeStats) nodeStats.textContent = `Parsed <product> Nodes: ${parsedProducts.length}`;
+
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to parse XML catalog: ' + err.message, 'error');
+      }
+    }
+
+    /**
+     * 2. CRISP SVG PRODUCT ILLUSTRATIONS (Zero broken external images)
+     */
+    function getProductIllustration(icon, color) {
+      const colorMap = {
+        indigo: 'from-indigo-500/20 to-violet-600/20 text-indigo-400 border border-indigo-400/15',
+        sky: 'from-sky-500/20 to-blue-600/20 text-sky-400 border border-sky-400/15',
+        violet: 'from-violet-500/20 to-purple-600/20 text-violet-400 border border-violet-400/15',
+        amber: 'from-amber-500/20 to-orange-600/20 text-amber-400 border border-amber-400/15',
+        emerald: 'from-emerald-500/20 to-teal-600/20 text-emerald-400 border border-emerald-400/15',
+        rose: 'from-rose-500/20 to-pink-600/20 text-rose-400 border border-rose-400/15',
+        teal: 'from-teal-500/20 to-cyan-600/20 text-teal-400 border border-teal-400/15',
+        slate: 'from-slate-600/25 to-slate-700/25 text-slate-300 border border-white/10'
+      };
+
+      const svgs = {
+        headphones: `<path stroke-linecap="round" stroke-linejoin="round" d="M3 18v-6a9 9 0 0118 0v6M3 18a3 3 0 003 3h1a2 2 0 002-2v-3a2 2 0 00-2-2H3v4zm18 0a3 3 0 01-3 3h-1a2 2 0 01-2-2v-3a2 2 0 012-2h4v4z" />`,
+        watch: `<path stroke-linecap="round" stroke-linejoin="round" d="M9 3h6l1 4H8l1-4zm0 18h6l1-4H8l1 4zM7 7h10a2 2 0 012 2v6a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2zm5 3v3l2 1" />`,
+        keyboard: `<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2zm3 4h.01M11 10h.01M15 10h.01M18 10h.01M7 14h10" />`,
+        book: `<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />`,
+        bottle: `<path stroke-linecap="round" stroke-linejoin="round" d="M10 3h4v3h-4V3zm-1 5h6a2 2 0 012 2v9a2 2 0 01-2 2H9a2 2 0 01-2-2v-9a2 2 0 012-2z" />`,
+        bolt: `<path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />`,
+        bag: `<path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />`,
+        lamp: `<path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />`
+      };
+
+      const theme = colorMap[color] || colorMap.indigo;
+      const path = svgs[icon] || svgs.bag;
+
+      return `
+        <div class="h-44 rounded-xl bg-gradient-to-br ${theme} flex items-center justify-center relative overflow-hidden">
+          <svg class="w-16 h-16 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
+            ${path}
+          </svg>
+        </div>
+      `;
+    }
+
+    /**
+     * Format currency in INR (₹)
+     */
+    function formatINR(amount) {
+      return '₹' + amount.toLocaleString('en-IN', {
+        minimumFractionDigits: amount % 1 === 0 ? 0 : 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    /**
+     * 3. SPA NAVIGATION ROUTER
+     */
+    function navigateTo(pageId) {
+      AppState.activePage = pageId;
+
+      // Toggle visible section
+      document.querySelectorAll('.page-section').forEach((sec) => {
+        sec.classList.remove('active');
+      });
+      const target = document.getElementById(`page-${pageId}`);
+      if (target) target.classList.add('active');
+
+      // Highlight active navbar links
+      document.querySelectorAll('.nav-btn').forEach((btn) => {
+        const isMatch = btn.getAttribute('data-nav') === pageId;
+        if (isMatch) {
+          btn.classList.add('bg-indigo-500/20', 'text-indigo-300', 'font-bold', 'border', 'border-indigo-400/25');
+          btn.classList.remove('text-slate-300', 'hover:bg-slate-800/70');
+        } else {
+          btn.classList.remove('bg-indigo-500/20', 'text-indigo-300', 'font-bold', 'border', 'border-indigo-400/25');
+          btn.classList.add('text-slate-300', 'hover:bg-slate-800/70');
+        }
+      });
+
+      // Close mobile menu if open
+      document.getElementById('mobile-menu').classList.add('hidden');
+
+      // Refresh page-specific content
+      if (pageId === 'cart') renderCartPage();
+      if (pageId === 'checkout') renderCheckoutPage();
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    }
+
+    /**
+     * 4. PRODUCT CARD COMPONENT & RENDERERS (Home + Catalog)
+     */
+    function createProductCardHTML(product) {
+      return `
+        <article class="product-card group bg-slate-900/75 rounded-2xl p-5 border border-white/10 shadow-lg flex flex-col justify-between">
+          <div>
+            <div class="relative mb-4">
+              ${getProductIllustration(product.icon, product.color)}
+              <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-950/90 text-slate-100 border border-white/10 shadow-sm">
+                ${product.badge}
+              </span>
+              <span class="absolute top-3 right-3 px-2 py-1 rounded-lg text-[11px] font-bold bg-slate-950/90 text-amber-300 border border-white/10 flex items-center gap-1">
+                ★ ${product.rating.toFixed(1)}
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-slate-400 font-medium mb-1">
+              <span>${product.category}</span>
+              <span class="text-emerald-400 font-semibold">${product.stock} in stock</span>
+            </div>
+
+            <h3 class="font-bold text-slate-100 text-base leading-snug mb-2 group-hover:text-indigo-400 transition">
+              ${product.name}
+            </h3>
+
+            <p class="text-xs text-slate-400 leading-relaxed line-clamp-2 mb-4">
+              ${product.description}
+            </p>
+          </div>
+
+          <div class="pt-3 border-t border-white/10 flex items-center justify-between gap-2">
+            <div>
+              <span class="text-[11px] text-slate-400 block">Price</span>
+              <span class="text-lg font-extrabold text-slate-50">${formatINR(product.price)}</span>
+            </div>
+            <button onclick="addToCart('${product.id}')" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold shadow-md shadow-indigo-950 transition flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Add to Cart</span>
+            </button>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderFeaturedProducts() {
+      const container = document.getElementById('featured-products-grid');
+      const featured = AppState.products.filter((p) => p.featured).slice(0, 4);
+      container.innerHTML = featured.map(createProductCardHTML).join('');
+    }
+
+    function renderCategoryFilters() {
+      const categories = ['All', ...new Set(AppState.products.map((p) => p.category))];
+      const container = document.getElementById('category-filters');
+
+      container.innerHTML = categories
+        .map((cat) => {
+          const isActive = AppState.selectedCategory === cat;
+          const classes = isActive
+            ? 'bg-indigo-600 text-white shadow-md shadow-indigo-950 border border-indigo-400/30'
+            : 'bg-slate-900/80 text-slate-300 border border-white/10 hover:border-indigo-400/40 hover:text-white';
+          return `<button onclick="selectCategory('${cat}')" class="px-4 py-2 rounded-xl text-xs font-bold transition ${classes}">${cat}</button>`;
+        })
+        .join('');
+    }
+
+    function selectCategory(cat) {
+      AppState.selectedCategory = cat;
+      renderCategoryFilters();
+      renderCatalog();
+    }
+
+    function renderCatalog() {
+      const searchQuery = (document.getElementById('catalog-search')?.value || '').toLowerCase().trim();
+      const sortBy = document.getElementById('catalog-sort')?.value || 'default';
+
+      let filtered = AppState.products.filter((p) => {
+        const matchesCat = AppState.selectedCategory === 'All' || p.category === AppState.selectedCategory;
+        const matchesSearch =
+          p.name.toLowerCase().includes(searchQuery) ||
+          p.description.toLowerCase().includes(searchQuery) ||
+          p.category.toLowerCase().includes(searchQuery);
+        return matchesCat && matchesSearch;
+      });
+
+      if (sortBy === 'price-asc') filtered.sort((a, b) => a.price - b.price);
+      if (sortBy === 'price-desc') filtered.sort((a, b) => b.price - a.price);
+      if (sortBy === 'rating-desc') filtered.sort((a, b) => b.rating - a.rating);
+
+      document.getElementById('catalog-count').textContent = filtered.length;
+      const grid = document.getElementById('catalog-grid');
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full bg-slate-900/80 rounded-2xl p-12 text-center border border-white/10">
+            <p class="text-slate-400 font-medium">No products match your search or category filter.</p>
+            <button onclick="resetCatalogFilters()" class="mt-3 px-4 py-2 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-bold hover:bg-indigo-500/30">Reset Filters</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(createProductCardHTML).join('');
+    }
+
+    function resetCatalogFilters() {
+      document.getElementById('catalog-search').value = '';
+      document.getElementById('catalog-sort').value = 'default';
+      selectCategory('All');
+    }
+
+    /**
+     * 5. SHOPPING CART LOGIC & RENDERER
+     */
+    function addToCart(productId) {
+      const product = AppState.products.find((p) => p.id === productId);
+      if (!product) return;
+
+      const existing = AppState.cart.find((item) => item.productId === productId);
+      if (existing) {
+        if (existing.qty >= product.stock) {
+          showToast(`Maximum available stock (${product.stock}) reached.`, 'error');
+          return;
+        }
+        existing.qty += 1;
+      } else {
+        AppState.cart.push({ productId, qty: 1 });
+      }
+
+      updateCartBadges();
+      showToast(`Added "${product.name}" to cart!`);
+    }
+
+    function updateCartQty(productId, delta) {
+      const index = AppState.cart.findIndex((item) => item.productId === productId);
+      if (index === -1) return;
+
+      const product = AppState.products.find((p) => p.id === productId);
+      const nextQty = AppState.cart[index].qty + delta;
+
+      if (nextQty <= 0) {
+        AppState.cart.splice(index, 1);
+      } else if (product && nextQty > product.stock) {
+        showToast(`Only ${product.stock} units available in XML stock.`, 'error');
+        return;
+      } else {
+        AppState.cart[index].qty = nextQty;
+      }
+
+      updateCartBadges();
+      renderCartPage();
+    }
+
+    function removeFromCart(productId) {
+      AppState.cart = AppState.cart.filter((item) => item.productId !== productId);
+      updateCartBadges();
+      renderCartPage();
+      showToast('Item removed from cart.');
+    }
+
+    function updateCartBadges() {
+      const totalItems = AppState.cart.reduce((sum, item) => sum + item.qty, 0);
+      document.getElementById('nav-cart-badge').textContent = totalItems;
+      document.getElementById('mobile-cart-badge').textContent = totalItems;
+    }
+
+    function calculateOrderTotals() {
+      let subtotal = 0;
+      const detailedItems = AppState.cart
+        .map((item) => {
+          const product = AppState.products.find((p) => p.id === item.productId);
+          if (!product) return null;
+          const lineTotal = product.price * item.qty;
+          subtotal += lineTotal;
+          return { ...product, qty: item.qty, lineTotal };
+        })
+        .filter(Boolean);
+
+      const gst = subtotal * 0.18; // 18% GST
+      const shipping = subtotal === 0 || subtotal >= 999 ? 0 : 99;
+      const grandTotal = subtotal + gst + shipping;
+
+      return { detailedItems, subtotal, gst, shipping, grandTotal };
+    }
+
+    function renderCartPage() {
+      const container = document.getElementById('cart-container');
+      const { detailedItems, subtotal, gst, shipping, grandTotal } = calculateOrderTotals();
+
+      if (detailedItems.length === 0) {
+        container.innerHTML = `
+          <div class="bg-slate-900/80 rounded-3xl p-12 text-center border border-white/10 shadow-xl max-w-lg mx-auto space-y-4">
+            <div class="w-16 h-16 rounded-2xl bg-indigo-500/15 border border-indigo-400/25 text-indigo-400 flex items-center justify-center mx-auto">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <h2 class="text-xl font-extrabold text-slate-100">Your cart is empty</h2>
+            <p class="text-sm text-slate-400">Looks like you haven't added any items from our XML catalog yet.</p>
+            <button onclick="navigateTo('products')" class="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-950 transition">
+              Explore Products
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      const itemsHTML = detailedItems
+        .map(
+          (item) => `
+          <div class="bg-slate-900/80 rounded-2xl p-4 sm:p-5 border border-white/10 shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 rounded-xl bg-indigo-500/15 border border-indigo-400/25 text-indigo-300 flex items-center justify-center shrink-0 font-bold text-xs">
+                ${item.id}
+              </div>
+              <div>
+                <span class="text-[11px] font-semibold text-indigo-400 uppercase">${item.category}</span>
+                <h3 class="font-bold text-slate-100 text-sm sm:text-base">${item.name}</h3>
+                <p class="text-xs text-slate-400 mt-0.5">${formatINR(item.price)} each</p>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between w-full sm:w-auto gap-4 pt-3 sm:pt-0 border-t sm:border-t-0 border-white/10">
+              <div class="flex items-center gap-2 bg-slate-950/80 border border-white/10 rounded-xl p-1">
+                <button onclick="updateCartQty('${item.id}', -1)" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-200 font-bold hover:bg-slate-700 shadow-sm">&minus;</button>
+                <span class="w-8 text-center text-sm font-bold text-slate-100">${item.qty}</span>
+                <button onclick="updateCartQty('${item.id}', 1)" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-200 font-bold hover:bg-slate-700 shadow-sm">+</button>
+              </div>
+
+              <div class="text-right min-w-[85px]">
+                <span class="font-extrabold text-slate-100 text-sm sm:text-base">${formatINR(item.lineTotal)}</span>
+              </div>
+
+              <button onclick="removeFromCart('${item.id}')" title="Remove Item" class="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/15 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        `
+        )
+        .join('');
+
+      container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div class="lg:col-span-2 space-y-4">${itemsHTML}</div>
+
+          <div class="lg:col-span-1">
+            <div class="bg-slate-900/80 rounded-2xl p-6 border border-white/10 shadow-xl space-y-4 sticky top-24">
+              <h2 class="text-lg font-extrabold text-slate-100">Order Summary</h2>
+              <div class="space-y-2.5 text-sm border-b border-white/10 pb-4">
+                <div class="flex justify-between text-slate-400">
+                  <span>Subtotal</span>
+                  <span class="font-semibold text-slate-100">${formatINR(subtotal)}</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                  <span>GST (18%)</span>
+                  <span class="font-semibold text-slate-100">${formatINR(gst)}</span>
+                </div>
+                <div class="flex justify-between text-slate-400">
+                  <span>Shipping ${subtotal >= 999 ? '<span class="text-xs text-emerald-400 font-semibold">(Free &gt; ₹999)</span>' : ''}</span>
+                  <span class="font-semibold ${shipping === 0 ? 'text-emerald-400' : 'text-slate-100'}">${shipping === 0 ? 'FREE' : formatINR(shipping)}</span>
+                </div>
+              </div>
+              <div class="flex justify-between items-center pt-1">
+                <span class="font-bold text-slate-100">Grand Total</span>
+                <span class="text-2xl font-extrabold text-indigo-400">${formatINR(grandTotal)}</span>
+              </div>
+              <button onclick="navigateTo('checkout')" class="w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-950 transition">
+                Proceed to Checkout &rarr;
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /**
+     * 6. CHECKOUT PAGE & ORDER RECEIPT
+     */
+    function renderCheckoutPage() {
+      const formWrapper = document.getElementById('checkout-form-wrapper');
+      const receiptWrapper = document.getElementById('order-receipt-wrapper');
+      const summaryPanel = document.getElementById('checkout-summary-panel');
+
+      // Reset view to form
+      formWrapper.classList.remove('hidden');
+      receiptWrapper.classList.add('hidden');
+      document.getElementById('checkout-error').classList.add('hidden');
+
+      // Auto-fill name/email if user is logged in
+      if (AppState.currentUser) {
+        const nameInput = document.getElementById('chk-name');
+        const emailInput = document.getElementById('chk-email');
+        if (!nameInput.value) nameInput.value = AppState.currentUser.name;
+        if (!emailInput.value) emailInput.value = AppState.currentUser.email;
+      }
+
+      const { detailedItems, subtotal, gst, shipping, grandTotal } = calculateOrderTotals();
+
+      if (detailedItems.length === 0) {
+        summaryPanel.innerHTML = `
+          <div class="text-center py-6 space-y-3">
+            <p class="text-sm font-semibold text-slate-400">Your cart is currently empty.</p>
+            <button onclick="navigateTo('products')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold">Add Items First</button>
+          </div>
+        `;
+        return;
+      }
+
+      summaryPanel.innerHTML = `
+        <h2 class="text-lg font-extrabold text-slate-100 mb-4">Order Summary (${detailedItems.length} items)</h2>
+        <div class="space-y-3 max-h-60 overflow-y-auto pr-1 border-b border-white/10 pb-4 mb-4">
+          ${detailedItems
+            .map(
+              (item) => `
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-400 font-medium">${item.name} <strong class="text-slate-100">&times;${item.qty}</strong></span>
+                <span class="font-bold text-slate-100 shrink-0 ml-2">${formatINR(item.lineTotal)}</span>
+              </div>
+            `
+            )
+            .join('')}
+        </div>
+        <div class="space-y-2 text-sm border-b border-white/10 pb-4 mb-4">
+          <div class="flex justify-between text-slate-400">
+            <span>Subtotal</span>
+            <span class="font-semibold text-slate-100">${formatINR(subtotal)}</span>
+          </div>
+          <div class="flex justify-between text-slate-400">
+            <span>GST (18%)</span>
+            <span class="font-semibold text-slate-100">${formatINR(gst)}</span>
+          </div>
+          <div class="flex justify-between text-slate-400">
+            <span>Shipping</span>
+            <span class="font-semibold ${shipping === 0 ? 'text-emerald-400' : 'text-slate-100'}">${shipping === 0 ? 'FREE' : formatINR(shipping)}</span>
+          </div>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="font-bold text-slate-100">Total Payable</span>
+          <span class="text-xl font-extrabold text-indigo-400">${formatINR(grandTotal)}</span>
+        </div>
+      `;
+    }
+
+    function highlightPaymentOption(radio) {
+      document.querySelectorAll('.payment-option').forEach((label) => {
+        label.classList.remove('border-indigo-500', 'bg-indigo-500/15');
+        label.classList.add('border-white/10', 'bg-slate-950/50');
+      });
+      const parent = radio.closest('.payment-option');
+      if (parent) {
+        parent.classList.remove('border-white/10', 'bg-slate-950/50');
+        parent.classList.add('border-indigo-500', 'bg-indigo-500/15');
+      }
+    }
+
+    function handlePlaceOrder(event) {
+      event.preventDefault();
+      const errorBox = document.getElementById('checkout-error');
+      errorBox.classList.add('hidden');
+
+      if (AppState.cart.length === 0) {
+        errorBox.textContent = 'Your cart is empty. Please add at least one product before placing an order.';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+
+      const name = document.getElementById('chk-name').value.trim();
+      const email = document.getElementById('chk-email').value.trim();
+      const phone = document.getElementById('chk-phone').value.trim();
+      const city = document.getElementById('chk-city').value.trim();
+      const address = document.getElementById('chk-address').value.trim();
+      const pin = document.getElementById('chk-pin').value.trim();
+      const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value || 'UPI';
+
+      // Client-side validation
+      if (!name || !email || !address || !city) {
+        errorBox.textContent = 'Please fill in all required shipping fields.';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        errorBox.textContent = 'Please enter a valid email address.';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+      if (!/^\d{10}$/.test(phone)) {
+        errorBox.textContent = 'Please enter a valid 10-digit mobile number.';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+      if (!/^\d{6}$/.test(pin)) {
+        errorBox.textContent = 'Please enter a valid 6-digit Indian PIN code.';
+        errorBox.classList.remove('hidden');
+        return;
+      }
+
+      // Snapshot order details before clearing cart
+      const orderSnapshot = calculateOrderTotals();
+      const orderId = 'NM-' + Math.floor(100000 + Math.random() * 900000);
+      const orderDate = new Date().toLocaleString('en-IN', {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+      });
+
+      // Clear cart
+      AppState.cart = [];
+      updateCartBadges();
+
+      // Render Order Confirmation Receipt
+      document.getElementById('checkout-form-wrapper').classList.add('hidden');
+      const receiptWrapper = document.getElementById('order-receipt-wrapper');
+      receiptWrapper.classList.remove('hidden');
+
+      receiptWrapper.innerHTML = `
+        <div class="bg-slate-900/90 rounded-3xl p-8 border border-white/10 shadow-2xl space-y-6">
+          <div class="text-center space-y-2 border-b border-white/10 pb-6">
+            <div class="w-14 h-14 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-400 flex items-center justify-center mx-auto mb-2">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-400/25 text-emerald-300 text-xs font-bold uppercase tracking-wider">Order Confirmed</span>
+            <h2 class="text-2xl font-extrabold text-slate-100">Thank you, ${name}!</h2>
+            <p class="text-sm text-slate-400">Order ID: <strong class="text-slate-100">${orderId}</strong> &bull; ${orderDate}</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-slate-950/70 border border-white/10 p-4 rounded-2xl">
+            <div>
+              <span class="text-slate-400 font-semibold uppercase block mb-1">Shipping To</span>
+              <p class="font-bold text-slate-100">${name}</p>
+              <p class="text-slate-300">${address}, ${city} - ${pin}</p>
+              <p class="text-slate-400">Phone: ${phone}</p>
+            </div>
+            <div>
+              <span class="text-slate-400 font-semibold uppercase block mb-1">Payment Details</span>
+              <p class="font-bold text-slate-100">${paymentMethod}</p>
+              <p class="text-slate-400">Receipt sent to: ${email}</p>
+            </div>
+          </div>
+
+          <div class="space-y-2.5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Itemized Receipt</h3>
+            ${orderSnapshot.detailedItems
+              .map(
+                (item) => `
+                <div class="flex justify-between text-sm py-1.5 border-b border-white/10">
+                  <span class="text-slate-300">${item.name} <span class="text-slate-500">&times; ${item.qty}</span></span>
+                  <span class="font-bold text-slate-100">${formatINR(item.lineTotal)}</span>
+                </div>
+              `
+              )
+              .join('')}
+            <div class="flex justify-between text-xs text-slate-400 pt-1">
+              <span>Subtotal + 18% GST + Shipping</span>
+              <span>${formatINR(orderSnapshot.subtotal)} + ${formatINR(orderSnapshot.gst)} + ${formatINR(orderSnapshot.shipping)}</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-white/15">
+              <span class="font-extrabold text-slate-100">Total Paid</span>
+              <span class="text-xl font-extrabold text-emerald-400">${formatINR(orderSnapshot.grandTotal)}</span>
+            </div>
+          </div>
+
+          <div class="pt-2 flex flex-col sm:flex-row gap-3">
+            <button onclick="navigateTo('home')" class="flex-1 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-950 transition">
+              Back to Home
+            </button>
+            <button onclick="navigateTo('products')" class="flex-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/10 text-slate-100 font-bold text-sm transition">
+              Continue Shopping
+            </button>
+          </div>
+        </div>
+      `;
+
+      showToast(`Order ${orderId} placed successfully!`);
+    }
+
+    /**
+     * 7. AUTHENTICATION (LOGIN / REGISTER) & SESSION UI
+     */
+    function switchAuthTab(tab) {
+      const loginForm = document.getElementById('login-form');
+      const regForm = document.getElementById('register-form');
+      const tabLogin = document.getElementById('tab-login');
+      const tabReg = document.getElementById('tab-register');
+
+      if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        regForm.classList.add('hidden');
+        tabLogin.className = 'py-2 rounded-lg text-sm font-bold bg-indigo-600 text-white shadow-sm transition';
+        tabReg.className = 'py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-slate-200 transition';
+      } else {
+        loginForm.classList.add('hidden');
+        regForm.classList.remove('hidden');
+        tabReg.className = 'py-2 rounded-lg text-sm font-bold bg-indigo-600 text-white shadow-sm transition';
+        tabLogin.className = 'py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-slate-200 transition';
+      }
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const derivedName = email.split('@')[0].replace(/[._]/g, ' ');
+      const formattedName = derivedName.charAt(0).toUpperCase() + derivedName.slice(1);
+
+      AppState.currentUser = { name: formattedName, email };
+      updateAuthNavbar();
+      showToast(`Welcome back, ${formattedName}!`);
+      navigateTo('home');
+    }
+
+    function handleRegister(event) {
+      event.preventDefault();
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+
+      AppState.currentUser = { name, email };
+      updateAuthNavbar();
+      showToast(`Account created! Welcome, ${name}.`);
+      navigateTo('home');
+    }
+
+    function handleLogout() {
+      AppState.currentUser = null;
+      updateAuthNavbar();
+      showToast('You have been logged out.');
+      navigateTo('home');
+    }
+
+    function updateAuthNavbar() {
+      const authArea = document.getElementById('nav-auth-area');
+      if (AppState.currentUser) {
+        authArea.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/15 border border-indigo-400/25 text-indigo-300 text-xs font-bold">
+              <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+              Hi, ${AppState.currentUser.name}
+            </span>
+            <button onclick="handleLogout()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-400 hover:bg-rose-500/15 border border-rose-500/30 transition">
+              Logout
+            </button>
+          </div>
+        `;
+      } else {
+        authArea.innerHTML = `
+          <button data-nav="auth" onclick="navigateTo('auth')" class="nav-btn px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-indigo-600 text-white hover:bg-indigo-500 transition shadow-sm">
+            Login
+          </button>
+        `;
+      }
+    }
+
+    /**
+     * 8. RAW XML INSPECTOR MODAL & CLIPBOARD
+     */
+    function openXmlModal() {
+      document.getElementById('xml-modal').classList.remove('hidden');
+    }
+
+    function closeXmlModal() {
+      document.getElementById('xml-modal').classList.add('hidden');
+    }
+
+    function copyRawXml() {
+      const text = document.getElementById('raw-xml-output').textContent;
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      showToast('Raw XML copied to clipboard!');
+    }
+
+    /**
+     * 9. TOAST NOTIFICATION SYSTEM
+     */
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const bgClass = type === 'error'
+        ? 'bg-rose-950/95 border border-rose-500/40 text-rose-100'
+        : 'bg-slate-900/95 border border-white/15 text-slate-100';
+
+      toast.className = `${bgClass} backdrop-blur-md px-4 py-3 rounded-xl shadow-2xl text-xs sm:text-sm font-semibold flex items-center gap-2.5 pointer-events-auto transform transition-all duration-300 translate-y-2 opacity-0`;
+      toast.innerHTML = `
+        <span class="w-2 h-2 rounded-full ${type === 'error' ? 'bg-rose-400' : 'bg-emerald-400'}"></span>
+        <span>${message}</span>
+      `;
+
+      container.appendChild(toast);
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 2800);
+    }
+
+    /**
+     * 10. INITIALIZE APPLICATION ON LOAD
+     */
+    window.addEventListener('DOMContentLoaded', () => {
+      parseProductCatalogXML();
+      renderFeaturedProducts();
+      renderCategoryFilters();
+      renderCatalog();
+      updateAuthNavbar();
+      updateCartBadges();
+      navigateTo('home');
+    });
+  </script>
+</body>
+</html>
